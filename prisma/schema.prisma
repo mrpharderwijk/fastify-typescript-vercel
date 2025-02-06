@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SubscriptionPlan {
+  HOBBY
+  PRO
+  ENTERPRISE
+}
+
+model User {
+  id               String           @id @default(cuid())
+  email            String           @unique
+  password         String
+  apiKey           String           @unique @default(uuid())
+  subscriptionPlan SubscriptionPlan @default(HOBBY)
+  monthlyRequests  Int              @default(0)
+  lastRequestReset DateTime         @default(now())
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  ApiUsage         ApiUsage[]
+}
+
+model Address {
+  id           Int      @id @default(autoincrement())
+  streetName   String
+  houseNumber  String
+  postalCode   String
+  city         String
+  municipality String
+  province     String
+  neighborhood String?
+  district     String?
+  latitude     Float?
+  longitude    Float?
+  createdAt    DateTime @default(now())
+
+  @@index([postalCode])
+}
+
+model ApiUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}

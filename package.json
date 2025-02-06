@@ -1,0 +1,32 @@
+{
+  "name": "vercel-fastify",
+  "version": "1.0.0",
+  "description": "Fastify API with address lookup functionality",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "seed:addresses": "ts-node scripts/seed-addresses.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^8.3.0",
+    "@fastify/jwt": "^7.2.1",
+    "@prisma/client": "^5.3.1",
+    "bcrypt": "^5.1.1",
+    "fastify": "^4.23.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/node": "^20.6.3",
+    "@vercel/node": "^3.0.7",
+    "prisma": "^5.3.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2"
+  }
+}
