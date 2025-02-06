@@ -76,11 +76,31 @@ vercel env add JWT_SECRET
   - Register a new user
   - Body: `{ "emailAddress": "user@example.com", "password": "password123" }`
   - Response: `{ "apiKey": "generated-api-key" }`
+  - Example:
+
+```bash
+  curl -X POST http://localhost:3000/api/v1/auth/register \
+    -H "Content-Type: application/json" \
+    -d '{
+      "emailAddress": "test@example.com",
+      "password": "password123"
+    }'
+```
 
 - `POST /api/v1/auth/login`
   - Login with credentials
   - Body: `{ "emailAddress": "user@example.com", "password": "password123" }`
   - Response: `{ "token": "jwt-token" }`
+  - Example:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "emailAddress": "test@example.com",
+    "password": "password123"
+  }'
+```
 
 ### Address Lookup
 
@@ -89,11 +109,31 @@ vercel env add JWT_SECRET
   - Look up address by postal code and house number
   - Headers: `{ "x-api-key": "your-api-key" }`
   - Body: `{ "postalCode": "1234AB", "houseNumber": "42" }`
+  - Example:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/address/lookup \
+  -H "Content-Type: application/json" -H "x-api-key: your-api-key"  \
+  -d '{
+    "postalCode": "8773HN",
+    "houseNumber": "191"
+  }'
+```
 
 - `POST /api/v1/postal-code/lookup`
   - Look up postal code by street name, house number, and city
   - Headers: `{ "x-api-key": "your-api-key" }`
   - Body: `{ "streetName": "Example Street", "houseNumber": "42", "city": "Amsterdam" }`
+  - Example:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/address/lookup \
+  -H "Content-Type: application/json" -H "x-api-key: your-api-key"  \
+  -d '{
+    "postalCode": "8773HN",
+    "houseNumber": "191"
+  }'
+```
 
 ## Rate Limits
 
