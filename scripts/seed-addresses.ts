@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
-
-const prisma = new PrismaClient();
+import { prisma } from '../src/utils/db';
 
 // Dutch city data
 const cities = [

@@ -1,13 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { PrismaClient, SubscriptionPlan } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-const RATE_LIMITS: Record<SubscriptionPlan, number> = {
-  HOBBY: 1000,
-  PRO: 10000,
-  ENTERPRISE: 100000,
-};
+import { CALL_LIMITS_PER_MONTH } from '../constants/config';
+import { prisma } from '../utils/db';
 
 export async function validateApiKey(request: FastifyRequest, reply: FastifyReply) {
   const apiKey = request.headers['x-api-key'];
@@ -38,11 +31,11 @@ export async function validateApiKey(request: FastifyRequest, reply: FastifyRepl
     user.monthlyRequests = 0;
   }
 
-  // Check rate limits
-  const monthlyLimit = RATE_LIMITS[user.subscriptionPlan];
+  // Check monthly rate limits
+  const monthlyLimit = CALL_LIMITS_PER_MONTH[user.subscriptionPlan];
   if (user.monthlyRequests >= monthlyLimit) {
     return reply.status(429).send({ 
-      error: 'Rate limit exceeded',
+      error: 'Monthly limit exceeded',
       limit: monthlyLimit,
       reset: new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString(),
     });
