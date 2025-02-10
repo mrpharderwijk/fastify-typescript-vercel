@@ -5,8 +5,9 @@
   "framework": null,
   "builds": [
     {
-      "src": "dist/index.js",
-      "use": "@vercel/node"
+      "src": "src/**/*.ts",
+      "use": "@vercel/node",
+      "config": { "buildCommand": "yarn build" }
     }
   ],
   "routes": [
