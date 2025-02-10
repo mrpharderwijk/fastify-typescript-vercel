@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CALL_LIMITS_PER_MONTH } from '../constants/config';
 import { prisma } from '../utils/db';
+import { validateDomain } from '@/middleware/validateDomain';
 
 export async function validateApiKey(request: FastifyRequest, reply: FastifyReply) {
   const apiKey = request.headers['x-api-key'];
@@ -40,6 +41,8 @@ export async function validateApiKey(request: FastifyRequest, reply: FastifyRepl
       reset: new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString(),
     });
   }
+
+  // await validateDomain(request, reply);
 
   // Increment request count
   await prisma.user.update({

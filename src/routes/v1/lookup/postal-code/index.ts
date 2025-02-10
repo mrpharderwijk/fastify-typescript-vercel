@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { validateApiKey } from '../../../middleware/auth';
+import { validateApiKey } from '../../../../middleware/auth';
+import { validateDomain } from '../../../../middleware/validateDomain';
 
 const prisma = new PrismaClient();
 
@@ -11,8 +12,8 @@ interface PostalCodeLookupBody {
 }
 
 export async function postalCodeRoutes(fastify: FastifyInstance) {
-  fastify.post<{ Body: PostalCodeLookupBody }>('/lookup', {
-    preHandler: validateApiKey,
+  fastify.post<{ Body: PostalCodeLookupBody }>('/', {
+    preHandler: [validateApiKey, validateDomain],
   }, async (request, reply) => {
     const { streetName, houseNumber, city } = request.body;
 

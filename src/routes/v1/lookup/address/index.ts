@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { validateApiKey } from '../../../middleware/auth';
+import { validateApiKey } from '../../../../middleware/auth';
+import { validateDomain } from '../../../../middleware/validateDomain';
 
 const prisma = new PrismaClient();
 
@@ -10,8 +11,8 @@ interface AddressLookupBody {
 }
 
 export async function addressRoutes(fastify: FastifyInstance) {
-  fastify.post<{ Body: AddressLookupBody }>('/lookup', {
-    preHandler: validateApiKey,
+  fastify.post<{ Body: AddressLookupBody }>('/', {
+    preHandler: [validateApiKey, validateDomain],
   }, async (request, reply) => {
     const { postalCode, houseNumber } = request.body;
 

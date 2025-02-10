@@ -3,8 +3,9 @@ import jwt from '@fastify/jwt';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import { authRoutes } from './routes/v1/auth';
-import { addressRoutes } from './routes/v1/address';
-import { postalCodeRoutes } from './routes/v1/postal-code';
+import { addressRoutes } from './routes/v1/lookup/address';
+import { postalCodeRoutes } from './routes/v1/lookup/postal-code';
+import { domainRoutes } from './routes/v1/auth/domains';
 import { RATE_LIMITS_PER_SECOND } from './constants/config';
 import { prisma } from './utils/db';
 
@@ -18,7 +19,23 @@ export const createApp = async (): Promise<FastifyInstance> => {
 
   // Register plugins
   await app.register(cors, {
-    origin: true,
+    origin: (origin, cb) => {
+      if (!origin) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        cb(null, true);
+        return;
+      }
+
+      try {
+        const domain = new URL(origin).hostname;
+        // Since we can't access request headers in the CORS callback,
+        // we'll do the domain validation in the route handlers
+        cb(null, true);
+      } catch (err) {
+        cb(new Error('Invalid origin'), false);
+      }
+    },
+    credentials: true,
   });
 
   await app.register(jwt, {
@@ -57,11 +74,12 @@ export const createApp = async (): Promise<FastifyInstance> => {
       endpoints: {
         auth: {
           register: '/api/v1/auth/register',
-          login: '/api/v1/auth/login'
+          login: '/api/v1/auth/login',
+          domains: '/api/v1/auth/domains'
         },
         lookup: {
-          address: '/api/v1/address/lookup',
-          postalCode: '/api/v1/postal-code/lookup'
+          address: '/api/v1/lookup/address',
+          postalCode: '/api/v1/lookup/postal-code'
         }
       }
     };
@@ -97,8 +115,9 @@ export const createApp = async (): Promise<FastifyInstance> => {
 
   // Register routes with rate limiting
   app.register(authRoutes, { prefix: '/api/v1/auth' });
-  app.register(addressRoutes, { prefix: '/api/v1/address', routeConfig: setRateLimits });
-  app.register(postalCodeRoutes, { prefix: '/api/v1/postal-code', routeConfig: setRateLimits });
+  app.register(domainRoutes, { prefix: '/api/v1/auth/domains' });
+  app.register(addressRoutes, { prefix: '/api/v1/lookup/address', routeConfig: setRateLimits });
+  app.register(postalCodeRoutes, { prefix: '/api/v1/lookup/postal-code', routeConfig: setRateLimits });
 
   return app;
 }; 
