@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "prisma generate && prisma migrate deploy && tsc",
     "start": "node dist/index.js",
-    "postinstall": "prisma generate",
+    "postinstall": "yarn build",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "seed:addresses": "ts-node scripts/seed-addresses.ts",
